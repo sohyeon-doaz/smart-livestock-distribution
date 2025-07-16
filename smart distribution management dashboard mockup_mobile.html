@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>스마트 축산유통</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+        
+        /* 색상 변수 */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #16a085;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --danger-color: #c0392b;
+            --bg-light: #ecf0f1;
+            --bg-dark: #bdc3c7;
+            --text-light: #7f8c8d;
+            --kakao-yellow: #fee500;
+            --kakao-brown: #3c1e1e;
+        }
+        
+        /* 모바일 컨테이너 */
+        .mobile-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f5f5;
+        }
+        
+        /* 상태바 */
+        .status-bar {
+            background-color: white;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 14px;
+        }
+        
+        .status-time {
+            font-weight: 600;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        /* 헤더 */
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-icon {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        /* 뷰 컨테이너 */
+        .view {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .view.active {
+            display: flex;
+        }
+        
+        /* 콘텐츠 영역 */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 70px;
+        }
+        
+        /* 홈 화면 스타일 */
+        .exchange-info {
+            background-color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        
+        .exchange-item {
+            text-align: center;
+        }
+        
+        .exchange-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .exchange-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .exchange-change {
+            font-size: 11px;
+            margin-top: 2px;
+        }
+        
+        .change-up {
+            color: var(--danger-color);
+        }
+        
+        .change-down {
+            color: var(--success-color);
+        }
+        
+        /* 빠른 메뉴 */
+        .quick-menu {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .quick-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .quick-menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-menu-item:active {
+            transform: scale(0.95);
+        }
+        
+        .quick-menu-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--bg-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .quick-menu-label {
+            font-size: 12px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+        
+        /* 요약 카드 */
+        .summary-section {
+            padding: 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .summary-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .summary-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        
+        .card-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .card-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .card-value {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 3px;
+        }
+        
+        .card-change {
+            font-size: 12px;
+            color: var(--success-color);
+        }
+        
+        .card-change.negative {
+            color: var(--danger-color);
+        }
+        
+        /* 채팅 스타일 */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #b2c7d9;
+        }
+        
+        .chat-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .back-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .chat-info {
+            flex: 1;
+        }
+        
+        .chat-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .chat-subtitle {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        .favorites-menu {
+            background-color: white;
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .favorites-menu::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .favorite-item {
+            padding: 8px 15px;
+            background-color: #f5f5f5;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .favorite-item:active {
+            background-color: var(--accent-color);
+            color: white;
+            transform: scale(0.95);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #e5ddd5;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d0ccc7' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-end;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-bot {
+            flex-direction: row;
+        }
+        
+        .message-user {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 8px;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 15px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            position: relative;
+        }
+        
+        .message-bot .message-content {
+            background-color: white;
+            border-top-left-radius: 5px;
+            color: #333;
+        }
+        
+        .message-user .message-content {
+            background-color: var(--kakao-yellow);
+            border-top-right-radius: 5px;
+            color: var(--kakao-brown);
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin: 0 8px;
+            white-space: nowrap;
+        }
+        
+        .product-card {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .product-info {
+            padding: 15px;
+        }
+        
+        .product-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .product-desc {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 8px;
+        }
+        
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background-color: white;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        
+        .quantity-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .quantity-display {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .order-btn {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .order-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .quick-replies {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 5px;
+        }
+        
+        .quick-replies::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .quick-reply {
+            padding: 8px 16px;
+            background-color: white;
+            border: 1px solid var(--accent-color);
+            border-radius: 20px;
+            color: var(--accent-color);
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .quick-reply:active {
+            background-color: var(--accent-color);
+            color: white;
+            transform: scale(0.95);
+        }
+        
+        .input-area {
+            background-color: white;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            padding-bottom: env(safe-area-inset-bottom, 10px);
+        }
+        
+        .input-wrapper {
+            flex: 1;
+            background-color: #f5f5f5;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            min-height: 40px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            line-height: 1.4;
+            resize: none;
+            max-height: 100px;
+        }
+        
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            background-color: var(--kakao-yellow);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .send-btn:active {
+            transform: scale(0.9);
+        }
+        
+        /* 재고 화면 스타일 */
+        .inventory-stats {
+            background-color: white;
+            padding: 20px;
+            margin: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .inventory-list {
+            background-color: white;
+            margin: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .inventory-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .inventory-info {
+            flex: 1;
+        }
+        
+        .inventory-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .inventory-detail {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .inventory-status {
+            text-align: right;
+        }
+        
+        .inventory-qty {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        
+        .status-tag {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
+        .status-good {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* 선적 화면 스타일 */
+        .shipment-card {
+            background-color: white;
+            margin: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        
+        .shipment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .shipment-id {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .shipment-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-shipping {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+            z-index: 2;
+        }
+        
+        .timeline-dot.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-title {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .timeline-date {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            bottom: 0;
+            width: 2px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        
+        /* 시세 화면 스타일 */
+        .price-tabs {
+            display: flex;
+            background-color: white;
+            margin: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .price-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+        
+        .price-tab.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+            background-color: #f8f9fa;
+        }
+        
+        .price-list {
+            background-color: white;
+            margin: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .price-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price-info {
+            flex: 1;
+        }
+        
+        .price-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .price-grade {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .price-values {
+            text-align: right;
+        }
+        
+        .price-current {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 3px;
+        }
+        
+        .price-change {
+            font-size: 12px;
+        }
+        
+        /* 바텀 네비게이션 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom, 0));
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: var(--text-light);
+            background: none;
+            border: none;
+        }
+        
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+        }
+        
+        /* 플로팅 주문 버튼 */
+        .floating-order-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            border: none;
+        }
+        
+        .floating-order-btn:active {
+            transform: scale(0.9);
+        }
+        
+        /* 데스크톱 뷰 제한 */
+        @media (min-width: 768px) {
+            .mobile-container {
+                max-width: 414px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- 상태바 -->
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <span>📶</span>
+                <span>📶</span>
+                <span>🔋</span>
+            </div>
+        </div>
+        
+        <!-- 홈 화면 -->
+        <div id="homeView" class="view active">
+            <!-- 헤더 -->
+            <div class="header">
+                <div class="header-title">스마트 축산유통</div>
+                <div class="header-icons">
+                    <button class="header-icon">🔍</button>
+                    <button class="header-icon" style="position: relative;">
+                        🔔
+                        <span style="position: absolute; top: -5px; right: -5px; background-color: var(--danger-color); color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px;">3</span>
+                    </button>
+                    <button class="header-icon">⚙️</button>
+                </div>
+            </div>
+            
+            <!-- 콘텐츠 영역 -->
+            <div class="content">
+                <!-- 환율 정보 -->
+                <div class="exchange-info">
+                    <div class="exchange-item">
+                        <div class="exchange-label">USD/KRW</div>
+                        <div class="exchange-value">₩1,342.50</div>
+                        <div class="exchange-change change-up">▲ 2.30</div>
+                    </div>
+                    <div class="exchange-item">
+                        <div class="exchange-label">시카고 선물</div>
+                        <div class="exchange-value">$182.5/cwt</div>
+                        <div class="exchange-change change-down">▼ 0.8%</div>
+                    </div>
+                    <div class="exchange-item">
+                        <div class="exchange-label">호주 달러</div>
+                        <div class="exchange-value">₩875.20</div>
+                        <div class="exchange-change change-up">▲ 1.15</div>
+                    </div>
+                </div>
+                
+                <!-- 빠른 메뉴 -->
+                <div class="quick-menu">
+                    <div class="quick-menu-grid">
+                        <div class="quick-menu-item" onclick="showView('chatView')">
+                            <div class="quick-menu-icon" style="background-color: #e8f5e9;">💬</div>
+                            <div class="quick-menu-label">간편주문</div>
+                        </div>
+                        <div class="quick-menu-item" onclick="showView('inventoryView')">
+                            <div class="quick-menu-icon" style="background-color: #fff3e0;">📦</div>
+                            <div class="quick-menu-label">재고확인</div>
+                        </div>
+                        <div class="quick-menu-item" onclick="showView('shipmentView')">
+                            <div class="quick-menu-icon" style="background-color: #e3f2fd;">🚢</div>
+                            <div class="quick-menu-label">선적현황</div>
+                        </div>
+                        <div class="quick-menu-item" onclick="showView('priceView')">
+                            <div class="quick-menu-icon" style="background-color: #fce4ec;">💰</div>
+                            <div class="quick-menu-label">시세정보</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 오늘의 요약 -->
+                <div class="summary-section">
+                    <h3 class="section-title">오늘의 요약</h3>
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <div class="card-icon">📝</div>
+                            <div class="card-label">오늘 주문</div>
+                            <div class="card-value">24건</div>
+                            <div class="card-change">▲ 8건 증가</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="card-icon">💵</div>
+                            <div class="card-label">오늘 매출</div>
+                            <div class="card-value">₩8,742만</div>
+                            <div class="card-change">▲ 12.5%</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="card-icon">📦</div>
+                            <div class="card-label">재고 부족</div>
+                            <div class="card-value">5개</div>
+                            <div class="card-change negative">긴급 발주 필요</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="card-icon">⚠️</div>
+                            <div class="card-label">미수금</div>
+                            <div class="card-value">₩4,250만</div>
+                            <div class="card-change negative">15개사</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 간편주문(채팅) 화면 -->
+        <div id="chatView" class="view">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <button class="back-button" onclick="showView('homeView')">‹</button>
+                    <div class="chat-info">
+                        <div class="chat-title">AI 주문 도우미</div>
+                        <div class="chat-subtitle">언제나 빠른 응답 • 24시간 운영</div>
+                    </div>
+                </div>
+                
+                <div class="favorites-menu">
+                    <div class="favorite-item" onclick="quickOrder('척아이롤 50kg')">🔥 척아이롤 50kg</div>
+                    <div class="favorite-item" onclick="quickOrder('갈비살 30kg')">⭐ 갈비살 30kg</div>
+                    <div class="favorite-item" onclick="quickOrder('등심 20kg')">👍 등심 20kg</div>
+                    <div class="favorite-item" onclick="quickOrder('목살 40kg')">💚 목살 40kg</div>
+                    <div class="favorite-item" onclick="quickOrder('안심 15kg')">💎 안심 15kg</div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message message-bot">
+                        <div class="message-avatar">🤖</div>
+                        <div>
+                            <div class="message-content">
+                                안녕하세요, 김대표님! 👋<br>
+                                오늘도 좋은 하루 되세요.<br><br>
+                                무엇을 도와드릴까요?
+                            </div>
+                            <div class="quick-replies">
+                                <button class="quick-reply" onclick="sendMessage('오늘 시세 알려줘')">오늘 시세</button>
+                                <button class="quick-reply" onclick="sendMessage('인기 상품 추천해줘')">인기 상품</button>
+                                <button class="quick-reply" onclick="sendMessage('재고 확인')">재고 확인</button>
+                                <button class="quick-reply" onclick="sendMessage('어제 주문 다시')">재주문</button>
+                            </div>
+                        </div>
+                        <span class="message-time">오전 9:30</span>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <textarea class="chat-input" 
+                                  id="chatInput"
+                                  placeholder="메시지를 입력하세요..." 
+                                  rows="1"
+                                  onkeypress="handleKeyPress(event)"
+                                  oninput="autoResize(this)"></textarea>
+                    </div>
+                    <button class="send-btn" onclick="sendUserMessage()">
+                        <svg width="20" height="20" fill="var(--kakao-brown)" viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 재고확인 화면 -->
+        <div id="inventoryView" class="view">
+            <div class="header">
+                <button class="back-button" onclick="showView('homeView')" style="background: none; border: none; color: white; font-size: 24px; margin-right: 10px;">‹</button>
+                <div class="header-title">재고 현황</div>
+                <div class="header-icons">
+                    <button class="header-icon">🔍</button>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="inventory-stats">
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">42개</div>
+                            <div class="stat-label">총 품목</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">12,450kg</div>
+                            <div class="stat-label">총 재고량</div>
+                        </div>
+                        <div class="stat-item" style="background-color: #ffebee;">
+                            <div class="stat-value" style="color: var(--danger-color);">5개</div>
+                            <div class="stat-label">재고 부족</div>
+                        </div>
+                        <div class="stat-item" style="background-color: #fff3cd;">
+                            <div class="stat-value" style="color: var(--warning-color);">3개</div>
+                            <div class="stat-label">유통기한 임박</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="inventory-list">
+                    <div class="inventory-item">
+                        <div class="inventory-info">
+                            <div class="inventory-name">척아이롤</div>
+                            <div class="inventory-detail">미국산 냉장 • Choice</div>
+                        </div>
+                        <div class="inventory-status">
+                            <div class="inventory-qty" style="color: var(--danger-color);">85kg</div>
+                            <div class="status-tag status-danger">재고부족</div>
+                        </div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-info">
+                            <div class="inventory-name">갈비살</div>
+                            <div class="inventory-detail">미국산 냉동 • Choice</div>
+                        </div>
+                        <div class="inventory-status">
+                            <div class="inventory-qty">320kg</div>
+                            <div class="status-tag status-good">양호</div>
+                        </div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-info">
+                            <div class="inventory-name">등심</div>
+                            <div class="inventory-detail">호주산 냉장 • Prime</div>
+                        </div>
+                        <div class="inventory-status">
+                            <div class="inventory-qty" style="color: var(--warning-color);">45kg</div>
+                            <div class="status-tag status-warning">주의</div>
+                        </div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-info">
+                            <div class="inventory-name">안심</div>
+                            <div class="inventory-detail">미국산 냉장 • Choice</div>
+                        </div>
+                        <div class="inventory-status">
+                            <div class="inventory-qty" style="color: var(--danger-color);">28kg</div>
+                            <div class="status-tag status-danger">재고부족</div>
+                        </div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-info">
+                            <div class="inventory-name">목살</div>
+                            <div class="inventory-detail">캐나다산 냉동 • AAA</div>
+                        </div>
+                        <div class="inventory-status">
+                            <div class="inventory-qty">450kg</div>
+                            <div class="status-tag status-good">충분</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 선적현황 화면 -->
+        <div id="shipmentView" class="view">
+            <div class="header">
+                <button class="back-button" onclick="showView('homeView')" style="background: none; border: none; color: white; font-size: 24px; margin-right: 10px;">‹</button>
+                <div class="header-title">선적 현황</div>
+                <div class="header-icons">
+                    <button class="header-icon">🔄</button>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="shipment-card">
+                    <div class="shipment-header">
+                        <div class="shipment-id">🚢 US2024-112</div>
+                        <div class="shipment-status status-shipping">운송중</div>
+                    </div>
+                    
+                    <div class="timeline">
+                        <div class="timeline-line"></div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot active">✓</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">선적 완료</div>
+                                <div class="timeline-date">2024.11.15 - LA, USA</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot active">🚢</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">해상 운송중</div>
+                                <div class="timeline-date">현재 위치: 태평양</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">📋</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">통관 예정</div>
+                                <div class="timeline-date">2024.11.30 예정</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">🏭</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">입고 예정</div>
+                                <div class="timeline-date">2024.12.01 예정</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <div style="font-weight: bold; margin-bottom: 10px;">선적 상품</div>
+                        <div style="font-size: 14px; line-height: 1.6;">
+                            • 척아이롤 3,000kg<br>
+                            • 갈비살 2,500kg<br>
+                            • 등심 1,500kg<br>
+                            • 기타 5종 5,000kg
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="shipment-card">
+                    <div class="shipment-header">
+                        <div class="shipment-id">🚢 AU2024-089</div>
+                        <div class="shipment-status" style="background-color: #fff3cd; color: #856404;">선적대기</div>
+                    </div>
+                    
+                    <div style="font-size: 14px; color: var(--text-light); margin-top: 10px;">
+                        출발: Sydney, AUS<br>
+                        예정일: 2024.11.20<br>
+                        도착예정: 2024.11.30
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 시세정보 화면 -->
+        <div id="priceView" class="view">
+            <div class="header">
+                <button class="back-button" onclick="showView('homeView')" style="background: none; border: none; color: white; font-size: 24px; margin-right: 10px;">‹</button>
+                <div class="header-title">시세 정보</div>
+                <div class="header-icons">
+                    <button class="header-icon">🔄</button>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="price-tabs">
+                    <div class="price-tab active" onclick="switchPriceTab(this, 'us')">미국산</div>
+                    <div class="price-tab" onclick="switchPriceTab(this, 'au')">호주산</div>
+                    <div class="price-tab" onclick="switchPriceTab(this, 'ca')">캐나다산</div>
+                </div>
+                
+                <div id="usPrices" class="price-list">
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-name">척아이롤</div>
+                            <div class="price-grade">Choice • 냉장</div>
+                        </div>
+                        <div class="price-values">
+                            <div class="price-current">₩13,000/kg</div>
+                            <div class="price-change change-up">▲ ₩200 (1.6%)</div>
+                        </div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-name">갈비살</div>
+                            <div class="price-grade">Choice • 냉동</div>
+                        </div>
+                        <div class="price-values">
+                            <div class="price-current">₩11,000/kg</div>
+                            <div class="price-change change-down">▼ ₩100 (0.9%)</div>
+                        </div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-name">등심</div>
+                            <div class="price-grade">Prime • 냉장</div>
+                        </div>
+                        <div class="price-values">
+                            <div class="price-current">₩22,000/kg</div>
+                            <div class="price-change change-up">▲ ₩500 (2.3%)</div>
+                        </div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-name">안심</div>
+                            <div class="price-grade">Choice • 냉장</div>
+                        </div>
+                        <div class="price-values">
+                            <div class="price-current">₩28,000/kg</div>
+                            <div class="price-change" style="color: var(--text-light);">- ₩0 (0.0%)</div>
+                        </div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-name">목살</div>
+                            <div class="price-grade">Choice • 냉동</div>
+                        </div>
+                        <div class="price-values">
+                            <div class="price-current">₩9,500/kg</div>
+                            <div class="price-change change-down">▼ ₩150 (1.6%)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="auPrices" class="price-list" style="display: none;">
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-name">등심</div>
+                            <div class="price-grade">Grain Fed • 냉장</div>
+                        </div>
+                        <div class="price-values">
+                            <div class="price-current">₩18,000/kg</div>
+                            <div class="price-change change-up">▲ ₩300 (1.7%)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="caPrices" class="price-list" style="display: none;">
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-name">목살</div>
+                            <div class="price-grade">AAA • 냉동</div>
+                        </div>
+                        <div class="price-values">
+                            <div class="price-current">₩8,000/kg</div>
+                            <div class="price-change change-down">▼ ₩200 (2.4%)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background-color: #fff3cd; padding: 15px; margin: 15px; border-radius: 8px;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">💡 AI 가격 예측</div>
+                    <div style="font-size: 14px; color: #856404;">
+                        환율 상승세가 지속될 것으로 예상됩니다. 
+                        필수 재고는 이번 주 내 확보를 권장합니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 플로팅 주문 버튼 -->
+        <button class="floating-order-btn" onclick="showView('chatView')">💬</button>
+        
+        <!-- 바텀 네비게이션 -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="showView('homeView')">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">홈</span>
+            </button>
+            <button class="nav-item">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">주문</span>
+            </button>
+            <button class="nav-item" onclick="showView('inventoryView')">
+                <span class="nav-icon">📦</span>
+                <span class="nav-label">재고</span>
+            </button>
+            <button class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">리포트</span>
+            </button>
+            <button class="nav-item">
+                <span class="nav-icon">⋯</span>
+                <span class="nav-label">더보기</span>
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // 뷰 전환 함수
+        function showView(viewId) {
+            // 모든 뷰 숨기기
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // 선택된 뷰 표시
+            document.getElementById(viewId).classList.add('active');
+            
+            // 네비게이션 활성화 상태 업데이트
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            
+            // 뷰에 따라 네비게이션 활성화
+            if (viewId === 'homeView') {
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (viewId === 'inventoryView') {
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+            }
+        }
+        
+        // 채팅 기능
+        let currentQty = 50;
+        const pricePerKg = 13000;
+        
+        function quickOrder(product) {
+            sendMessage(product + ' 주문하고 싶어요');
+        }
+        
+        function sendMessage(text) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            // 사용자 메시지 추가
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message message-user';
+            userMessage.innerHTML = `
+                <span class="message-time">${getCurrentTime()}</span>
+                <div class="message-content">${text}</div>
+            `;
+            messagesContainer.appendChild(userMessage);
+            
+            // 봇 응답
+            setTimeout(() => {
+                addBotResponse(text);
+            }, 1000);
+            
+            scrollToBottom();
+        }
+        
+        function sendUserMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            
+            if (text) {
+                sendMessage(text);
+                input.value = '';
+                autoResize(input);
+            }
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendUserMessage();
+            }
+        }
+        
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+        
+        function addBotResponse(userText) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            let responseContent = '';
+            let hasProduct = false;
+            
+            if (userText.includes('척아이롤')) {
+                hasProduct = true;
+                responseContent = `
+                    네, 척아이롤 준비해드리겠습니다! 😊<br>
+                    현재 미국산 냉장 제품으로 재고가 있어요.
+                `;
+            } else if (userText.includes('시세')) {
+                responseContent = `
+                    오늘의 시세 정보입니다 📊<br><br>
+                    🇺🇸 USD/KRW: ₩1,342<br>
+                    📈 시카고 선물: $182.5/cwt<br><br>
+                    주요 부위 가격:<br>
+                    • 척아이롤: ₩13,000/kg<br>
+                    • 갈비살: ₩11,000/kg<br>
+                    • 등심: ₩18,000/kg
+                `;
+            } else if (userText.includes('재고')) {
+                responseContent = `
+                    현재 재고 현황입니다 📦<br><br>
+                    • 척아이롤: 85kg (부족)<br>
+                    • 갈비살: 320kg (양호)<br>
+                    • 등심: 45kg (주의)<br>
+                    • 안심: 28kg (주의)<br>
+                    • 목살: 450kg (충분)
+                `;
+            } else if (userText.includes('인기') || userText.includes('추천')) {
+                responseContent = `
+                    오늘의 인기 상품입니다 🏆<br><br>
+                    1️⃣ 척아이롤 - 가성비 최고!<br>
+                    2️⃣ 갈비살 - 단골 인기 메뉴<br>
+                    3️⃣ 등심 - 프리미엄 품질<br><br>
+                    어떤 상품을 주문하시겠어요?
+                `;
+            } else {
+                responseContent = '네, 확인해드리겠습니다!';
+            }
+            
+            const botMessage = document.createElement('div');
+            botMessage.className = 'message message-bot';
+            
+            if (hasProduct) {
+                botMessage.innerHTML = `
+                    <div class="message-avatar">🤖</div>
+                    <div>
+                        <div class="message-content">${responseContent}</div>
+                        
+                        <div class="product-card">
+                            <div class="product-info">
+                                <div class="product-name">척아이롤 (미국산 냉장)</div>
+                                <div class="product-desc">
+                                    • 등급: Choice<br>
+                                    • 재고: 85kg<br>
+                                    • 당일 배송 가능
+                                </div>
+                                <div class="product-price">₩13,000/kg</div>
+                                <div class="quantity-selector">
+                                    <button class="quantity-btn" onclick="decreaseQty()">-</button>
+                                    <div class="quantity-display"><span id="qty">${currentQty}</span>kg</div>
+                                    <button class="quantity-btn" onclick="increaseQty()">+</button>
+                                </div>
+                                <button class="order-btn" onclick="addToOrder()">주문에 추가 (₩${(currentQty * pricePerKg).toLocaleString()})</button>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-replies">
+                            <button class="quick-reply" onclick="sendMessage('다른 부위도 보여줘')">다른 부위</button>
+                            <button class="quick-reply" onclick="sendMessage('호주산도 있어?')">호주산</button>
+                        </div>
+                    </div>
+                    <span class="message-time">${getCurrentTime()}</span>
+                `;
+            } else {
+                botMessage.innerHTML = `
+                    <div class="message-avatar">🤖</div>
+                    <div>
+                        <div class="message-content">${responseContent}</div>
+                    </div>
+                    <span class="message-time">${getCurrentTime()}</span>
+                `;
+            }
+            
+            messagesContainer.appendChild(botMessage);
+            scrollToBottom();
+        }
+        
+        function increaseQty() {
+            currentQty += 10;
+            updateQuantity();
+        }
+        
+        function decreaseQty() {
+            if (currentQty > 10) {
+                currentQty -= 10;
+                updateQuantity();
+            }
+        }
+        
+        function updateQuantity() {
+            const qtyElement = document.getElementById('qty');
+            if (qtyElement) {
+                qtyElement.textContent = currentQty;
+                const orderBtn = document.querySelector('.order-btn');
+                if (orderBtn) {
+                    orderBtn.textContent = `주문에 추가 (₩${(currentQty * pricePerKg).toLocaleString()})`;
+                }
+            }
+        }
+        
+        function addToOrder() {
+            alert('주문에 추가되었습니다!');
+        }
+        
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const period = hours < 12 ? '오전' : '오후';
+            const displayHours = hours % 12 || 12;
+            return `${period} ${displayHours}:${minutes.toString().padStart(2, '0')}`;
+        }
+        
+        function scrollToBottom() {
+            const messages = document.querySelector('.chat-messages');
+            if (messages) {
+                setTimeout(() => {
+                    messages.scrollTop = messages.scrollHeight;
+                }, 100);
+            }
+        }
+        
+        // 시세 탭 전환
+        function switchPriceTab(tabElement, country) {
+            // 모든 탭 비활성화
+            document.querySelectorAll('.price-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 선택된 탭 활성화
+            tabElement.classList.add('active');
+            
+            // 모든 가격 리스트 숨기기
+            document.querySelectorAll('.price-list').forEach(list => {
+                list.style.display = 'none';
+            });
+            
+            // 선택된 가격 리스트 표시
+            if (country === 'us') {
+                document.getElementById('usPrices').style.display = 'block';
+            } else if (country === 'au') {
+                document.getElementById('auPrices').style.display = 'block';
+            } else if (country === 'ca') {
+                document.getElementById('caPrices').style.display = 'block';
+            }
+        }
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            scrollToBottom();
+        });
+    </script>
+</body>
+</html>
